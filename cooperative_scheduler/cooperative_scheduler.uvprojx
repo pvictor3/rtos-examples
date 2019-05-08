@@ -402,6 +402,11 @@
               <FileType>2</FileType>
               <FilePath>.\startup.s</FilePath>
             </File>
+            <File>
+              <FileName>semaphore.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\semaphore.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -416,6 +421,11 @@
               <FileName>PLL.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\PLL.h</FilePath>
+            </File>
+            <File>
+              <FileName>semaphore.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\semaphore.h</FilePath>
             </File>
           </Files>
         </Group>

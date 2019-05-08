@@ -47,6 +47,7 @@ void Task1(void){
   for(;;){
     Count1++;
     GPIO_PORTD1 ^= 0x02;      // toggle PD1
+		OS_suspend();
   }
 }
 void Task2(void){
@@ -54,6 +55,7 @@ void Task2(void){
   for(;;){
     Count2++;
     GPIO_PORTD2 ^= 0x04;      // toggle PD2
+		OS_suspend();
   }
 }
 void Task3(void){
@@ -61,5 +63,6 @@ void Task3(void){
   for(;;){
     Count3++;
     GPIO_PORTD3 ^= 0x08;      // toggle PD3
+		OS_suspend();
   }
 }

@@ -11,13 +11,6 @@
 #include "OS.h"
 #include "PLL.h"
 
-// function definitions in osasm.s
-void OS_disableInterrupts(void); // Disable interrupts
-void OS_enableInterrupts(void);  // Enable interrupts
-int32_t startCritical(void);
-void endCritical(int32_t primask);
-void startOS(void);
-
 static void setInitialStack(int i);
 
 #define NUMTHREADS  3           //Maximun number of threads
@@ -88,6 +81,17 @@ void OS_launch(uint32_t timeSlice)
     SysTick->LOAD = timeSlice - 1;   //reload value
     SysTick->CTRL = 0x00000007;        //enable, core clock and interrupt unmasked
     startOS();
+}
+
+/*
+    * OS_suspend
+    * triggers a SysTick interrupt which will stop the current thread and will run the next thread
+    * input: none
+    * output: none 
+*/
+void OS_suspend(void)
+{
+	SCB->ICSR = 0x04000000;	//trigger systick
 }
 
 
