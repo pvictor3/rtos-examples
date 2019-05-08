@@ -126,6 +126,12 @@ static void setInitialStack(int i)
 	stacks[i][STACKSIZE - 16] = 0x04040404;	//R4
 }
 
+/*
+    * scheduler
+    * selects the next thread to execute
+    * input: none
+    * output: none
+*/
 void scheduler(void)
 {
 	ptRun = ptRun->next;	//Round robin
