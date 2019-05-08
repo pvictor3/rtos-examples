@@ -589,17 +589,17 @@ PWM1Fault_Handler
 ; Useful functions.
 ;
 ;******************************************************************************
-        ;EXPORT  DisableInterrupts
-        ;EXPORT  EnableInterrupts
+        EXPORT  disableInterrupts
+        EXPORT  enableInterrupts
         EXPORT  startCritical
         EXPORT  endCritical
-        EXPORT  WaitForInterrupt
+        EXPORT  waitForInterrupt
 
 ;*********** DisableInterrupts ***************
 ; disable interrupts
 ; inputs:  none
 ; outputs: none
-DisableInterrupts
+disableInterrupts
         CPSID  I
         BX     LR
 
@@ -607,7 +607,7 @@ DisableInterrupts
 ; disable interrupts
 ; inputs:  none
 ; outputs: none
-EnableInterrupts
+enableInterrupts
         CPSIE  I
         BX     LR
 
@@ -632,7 +632,7 @@ endCritical
 ; go to low power mode while waiting for the next interrupt
 ; inputs:  none
 ; outputs: none
-WaitForInterrupt
+waitForInterrupt
         WFI
         BX     LR
 

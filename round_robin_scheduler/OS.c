@@ -126,4 +126,8 @@ static void setInitialStack(int i)
 	stacks[i][STACKSIZE - 16] = 0x04040404;	//R4
 }
 
+void scheduler(void)
+{
+	ptRun = ptRun->next;	//Round robin
+}
 
