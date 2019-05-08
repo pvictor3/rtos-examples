@@ -16,11 +16,6 @@ static void setInitialStack(int i);
 #define NUMTHREADS  3           //Maximun number of threads
 #define STACKSIZE   100         //number of 32-bit words in stack
 
-typedef struct tcb
-{
-    int32_t *sp;                //pointer to stack, valid for threads not runnig
-    struct tcb *next;           //linked-list pointer 
-}tcb_t;
 
 tcb_t tcbs[NUMTHREADS];
 tcb_t *ptRun;                           //currently running thread
@@ -123,12 +118,16 @@ static void setInitialStack(int i)
 
 /*
     * scheduler
-    * selects the next thread to execute
+    * selects the next thread not blocked to execute
     * input: none
     * output: none
 */
 void scheduler(void)
 {
-	ptRun = ptRun->next;	//Round robin
+	ptRun = ptRun->next;	//run next thread not blocked
+	while( ptRun->blocked ) //skip if blocked
+	{
+		ptRun = ptRun->next;
+	}
 }
 

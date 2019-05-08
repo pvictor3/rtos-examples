@@ -11,6 +11,13 @@
 
 #include<stdint.h>
 
+typedef struct tcb
+{
+    int32_t *sp;                //pointer to stack, valid for threads not runnig
+    struct tcb *next;           //linked-list pointer
+		int32_t *blocked;						//pointer to semaphore that blocked this thread
+}tcb_t;
+
 // function definitions in osasm.s
 void OS_disableInterrupts(void); // Disable interrupts
 void OS_enableInterrupts(void);  // Enable interrupts
