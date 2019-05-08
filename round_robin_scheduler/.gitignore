@@ -1,1 +1,5 @@
 .vscode/
+Objects/
+Listings/
+*.pvict
+*.scvd
