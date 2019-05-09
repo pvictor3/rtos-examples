@@ -66,6 +66,14 @@ void OS_suspend(void);
     * input: number of time slices
     * output: none 
 */
-void OS_sleep(uint32_t time);									
+void OS_sleep(uint32_t time);
+
+/*
+    * OS_addPeriodicTask
+    * adds a new task to be executed periodically 
+    * input: pointer to function task, period of time
+    * output: none 
+*/
+void OS_addPeriodicTask(void(*pfPeriodicTask)(void), uint32_t time);
 
 #endif

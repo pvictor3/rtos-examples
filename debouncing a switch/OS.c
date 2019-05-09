@@ -11,7 +11,7 @@
 #include "OS.h"
 #include "PLL.h"
 
-static void setInitialStack(int i);
+
 
 #define NUMTHREADS  3           //Maximun number of threads
 #define STACKSIZE   100         //number of 32-bit words in stack
@@ -20,6 +20,12 @@ static void setInitialStack(int i);
 tcb_t tcbs[NUMTHREADS];
 tcb_t *ptRun;                           //currently running thread
 int32_t stacks[NUMTHREADS][STACKSIZE];
+static void(*pfCallback)(void);
+static uint32_t period;
+static uint32_t counter;
+
+static void setInitialStack(int i);
+static void decrementSleep(void);
 
 /*
     * OS_init
@@ -33,7 +39,9 @@ void OS_init(void)
     PLL_init();                 //set clock to 50MHz
 		SysTick->CTRL = 0;					//disable SysTick
     SysTick->VAL = 0;      			//any write to current clears it
-    SCB->SHP[11] = 0xE0;  			//priority 7  
+    SCB->SHP[11] = 0xE0;  			//priority 7
+		
+		OS_addPeriodicTask(decrementSleep, 10);
 }
 
 /*
@@ -101,6 +109,18 @@ void OS_sleep(uint32_t time)
 	OS_suspend();
 }
 
+/*
+    * OS_addPeriodicTask
+    * adds a new task to be executed periodically 
+    * input: pointer to function task, period of time
+    * output: none 
+*/
+void OS_addPeriodicTask(void(*pfPeriodicTask)(void), uint32_t time)
+{
+	pfCallback = pfPeriodicTask;
+	period = time;
+}
+
 
 /*
     * setInitialStack
@@ -136,6 +156,12 @@ static void setInitialStack(int i)
 */
 void scheduler(void)
 {
+	if( (period != 0) && (++counter == period) )
+	{
+		(*pfCallback)();
+		counter = 0;
+	}
+	
 	uint32_t max = 255;		//max
 	tcb_t *pt;
 	tcb_t *ptBest;
@@ -154,5 +180,26 @@ void scheduler(void)
 	
 	ptRun = ptBest;
 	
+}
+
+/*
+    * decrementSleep
+    * decrements the counter sleep for each sleeping thread
+    * input: none
+    * output: none
+*/
+static void decrementSleep(void)
+{
+	tcb_t *pt;
+	pt = ptRun;	//pt points to current thread
+	
+	do
+	{
+		pt = pt->next;			//pt points to the next thread
+		if(pt->sleep > 0)		//if sleep nonzero, thread is sleeping
+		{
+			pt->sleep--;			//decrement the counter
+		}
+	}while(ptRun != pt);	//look at all possible threads
 }
 
