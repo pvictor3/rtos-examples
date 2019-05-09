@@ -42,22 +42,22 @@ void OS_init(void)
     * input: three pointers to void/void tasks
     * output: 1 if successful, 0 if these threads cannot be added
 */
-int OS_addThread(void(*task0)(void), void(*task1)(void), void(*task2)(void))
+int OS_addThread(void(*task0)(void), uint8_t prio0, void(*task1)(void), uint8_t prio1)
 {
     int32_t status;
     status = startCritical();
 
     tcbs[0].next = &tcbs[1];    //0 points to 1
-    tcbs[1].next = &tcbs[2];    //1 points to 2
-    tcbs[2].next = &tcbs[0];    //2 points to 0
-
+    tcbs[1].next = &tcbs[0];    //1 points to 0
+    
     setInitialStack(0);
     stacks[0][STACKSIZE - 2] = (int32_t)(task0); //PC
+		tcbs[0].priority = prio0;
+	
     setInitialStack(1);
     stacks[1][STACKSIZE - 2] = (int32_t)(task1); //PC
-    setInitialStack(2);
-    stacks[2][STACKSIZE - 2] = (int32_t)(task2); //PC
-
+		tcbs[1].priority = prio1;
+	
     ptRun = &tcbs[0];           //thread 0 will run first
 
     endCritical(status);
@@ -136,10 +136,23 @@ static void setInitialStack(int i)
 */
 void scheduler(void)
 {
-	ptRun = ptRun->next;	//run next thread not blocked
-	while( ptRun->blocked || ptRun->sleep ) //skip if blocked or sleeping
+	uint32_t max = 255;		//max
+	tcb_t *pt;
+	tcb_t *ptBest;
+	
+	pt = ptRun;
+	
+	do									//search for highest thread not blocked or sleeping
 	{
-		ptRun = ptRun->next;
-	}
+		pt = pt->next;		//next thread
+		if( (pt->priority < max) && ((pt->blocked) == 0) && ((pt->sleep) == 0) )
+		{
+			max = pt->priority;
+			ptBest = pt;
+		}
+	} while(ptRun != pt);	//look at all possible threads
+	
+	ptRun = ptBest;
+	
 }
 
