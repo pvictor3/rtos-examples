@@ -16,6 +16,7 @@ typedef struct tcb
     int32_t *sp;                //pointer to stack, valid for threads not runnig
     struct tcb *next;           //linked-list pointer
 		int32_t *blocked;						//pointer to semaphore that blocked this thread
+		int32_t sleep;							//number of time slices to sleep
 }tcb_t;
 
 // function definitions in osasm.s
@@ -57,6 +58,14 @@ void OS_launch(uint32_t timeSlice);
     * input: none
     * output: none 
 */
-void OS_suspend(void);									
+void OS_suspend(void);
+
+/*
+    * OS_sleep
+    * sleep the thread for the given time
+    * input: number of time slices
+    * output: none 
+*/
+void OS_sleep(uint32_t time);									
 
 #endif

@@ -89,6 +89,18 @@ void OS_suspend(void)
 	SCB->ICSR = 0x04000000;	//trigger systick
 }
 
+/*
+    * OS_sleep
+    * sleep the thread for the given time
+    * input: number of time slices
+    * output: none 
+*/
+void OS_sleep(uint32_t time)
+{
+	ptRun->sleep = time;			//number of time slices to sleep
+	OS_suspend();
+}
+
 
 /*
     * setInitialStack
@@ -125,7 +137,7 @@ static void setInitialStack(int i)
 void scheduler(void)
 {
 	ptRun = ptRun->next;	//run next thread not blocked
-	while( ptRun->blocked ) //skip if blocked
+	while( ptRun->blocked || ptRun->sleep ) //skip if blocked or sleeping
 	{
 		ptRun = ptRun->next;
 	}
