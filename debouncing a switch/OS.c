@@ -26,6 +26,7 @@ static uint32_t counter;
 
 static void setInitialStack(int i);
 static void decrementSleep(void);
+static void idleTask(void);
 
 /*
     * OS_init
@@ -56,8 +57,9 @@ int OS_addThread(void(*task0)(void), uint8_t prio0, void(*task1)(void), uint8_t 
     status = startCritical();
 
     tcbs[0].next = &tcbs[1];    //0 points to 1
-    tcbs[1].next = &tcbs[0];    //1 points to 0
-    
+    tcbs[1].next = &tcbs[2];    //1 points to 2
+		tcbs[2].next = &tcbs[0];		//2 points to 0
+	
     setInitialStack(0);
     stacks[0][STACKSIZE - 2] = (int32_t)(task0); //PC
 		tcbs[0].priority = prio0;
@@ -65,6 +67,10 @@ int OS_addThread(void(*task0)(void), uint8_t prio0, void(*task1)(void), uint8_t 
     setInitialStack(1);
     stacks[1][STACKSIZE - 2] = (int32_t)(task1); //PC
 		tcbs[1].priority = prio1;
+	
+		setInitialStack(2);
+		stacks[2][STACKSIZE - 2] = (int32_t)(idleTask);	//PC
+		tcbs[2].priority = 1;
 	
     ptRun = &tcbs[0];           //thread 0 will run first
 
@@ -201,5 +207,13 @@ static void decrementSleep(void)
 			pt->sleep--;			//decrement the counter
 		}
 	}while(ptRun != pt);	//look at all possible threads
+}
+
+static void idleTask(void)
+{
+	while(1)
+	{
+		
+	}
 }
 

@@ -14,6 +14,9 @@
 
 #define TIME_1MS                50000
 #define TIMESLICE               TIME_1MS * 2    // thread switch time in system time units
+#define LED_RED									(1<<1)
+#define LED_GREEN								(1<<2)
+#define LED_BLUE								(1<<3)
 
 int32_t sw1, sw2;								//semaphores
 uint8_t last1, last2;						//last state of the switch
@@ -22,10 +25,18 @@ void switchInit(void);
 void switchTask1(void);
 void switchTask2(void);
 
+void ledsInit(void)
+{
+	GPIOF->DIR |= LED_RED | LED_GREEN | LED_BLUE; //as outputs
+	GPIOF->DEN |= LED_RED | LED_GREEN | LED_BLUE; //enable digital I/O on PF1,PF2,PF3
+	
+	GPIOF->DATA = LED_RED | LED_GREEN | LED_BLUE;
+}
+
 int main(void){
   OS_init();           // initialize, disable interrupts, 50 MHz
 	switchInit();
-	
+	ledsInit();
 	//TODO: periodic task to decrement sleep counter
 	
   OS_addThread(&switchTask1, 0, &switchTask2, 0);
@@ -59,7 +70,7 @@ void switchTask1(void)					//high priority main thread
 		OS_wait(&sw1);							//wait for SW1 to be touched or released
 		if(last1)										//was previously not touched
 		{	
-			//touch1();
+			GPIOF->DATA = LED_RED;
 		}else
 		{
 			//release1();
@@ -80,7 +91,7 @@ void switchTask2(void)					//high priority main thread
 		OS_wait(&sw2);							//wait for SW2 to be touched or released
 		if(last2)										//was previously not touched
 		{	
-			//touch2();
+			GPIOF->DATA = LED_BLUE;
 		}else
 		{
 			//release2();
